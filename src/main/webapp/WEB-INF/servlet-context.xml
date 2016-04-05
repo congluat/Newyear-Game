@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+
+	<!-- MySQL data source -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+		<property name="url"
+			value="jdbc:sqlserver://NEWYEARCLGAME.mssql.somee.com; Database=NEWYEARCLGAME" />
+		<property name="username" value="luat" />
+		<property name="password" value="123456789" />
+	</bean>
+
+	<!-- Hibernate session factory -->
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>player.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.SQLServerDialect
+				</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+		
+	
+	</bean>
+
+
+
+	<context:component-scan base-package="controller,model, dao, service" />
+
+	<mvc:annotation-driven />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/jsp/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+
+	<!-- <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"> 
+		<property name="basename" value="messages" /> </bean> -->
+
+	<!-- <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" 
+		/> -->
+
+	<!-- <bean id="daoFactoty" class="dao.DAOFactory"> </bean> -->
+
+	<!-- <bean id="studentDAO" class="dao.StudentDAOImpl"> <property name="sessionFactory" 
+		ref="sessionFactory" /> </bean> -->
+	<!-- <bean id="DAOFactory" class="dao.DAOFactory"> <property name="ScoreDAOImpl" 
+		value="dao.ScoreDAOImpl" /> <property name="StudentDAOImpl" ref="dao.StudentDAOImpl" 
+		/> </bean> -->
+
+
+	<bean id="playerDAO" class="dao.PlayerDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+
+	<bean id="playerService" class="service.PlayerServiceImpl">
+	</bean>
+
+	<bean id="mailSender" class="utils.MailSender">
+	</bean>
+
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="465" />
+		<property name="username" value="congluat27@gmail.com" />
+		<property name="password" value="luatvidai" />
+
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+				<prop key="mail.smtp.socketFactory.port">465</prop>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- <bean id="scoreService" class="service.ScoreServiceImpl"> </bean> <mvc:interceptors> 
+		<mvc:interceptor> <mvc:mapping path="/*" /> <bean class="interceptor.AuthenticationInterceptor" 
+		/> </mvc:interceptor> </mvc:interceptors> -->
+
+</beans>
